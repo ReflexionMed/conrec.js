@@ -1,2 +1,5 @@
-declare const Conrec: any;
-export = Conrec;
+declare	module conrec {
+    const Conrec: any;
+}
+export = conrec;
+

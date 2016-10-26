@@ -1,7 +1,7 @@
 /**
  * Originally from http://www2.warwick.ac.uk/fac/sci/moac/currentstudents/peter_cock/r/matrix_contour/
  */
-export const data = [
+export const data = [ // 20x20
   [
     0.4, 
     0.4, 

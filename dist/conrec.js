@@ -294,11 +294,11 @@ var Conrec = (function () {
      * Any number of contour levels may be specified but they must be in order of
      * increasing value.
      *
-     * IMPORTANT! This code was considers x-dimension to be of size data.length,
-     *            y-dimension to be data[0].length, which is reverse of what is
-     *            normally used. Ie. it assumes column-major matrix layout.
+     * IMPORTANT! This version (2.2+) now assumes row-major, but linearized matrix layout,
+     *            unlike in 2.1.0 of conrec.ts
      *
-     * @param {number[][]} data - matrix of data to contour
+     * @param {number[]} data - data to contour: linearized row-major matrix of size
+     *                          (y.length rows, x.length columns)
      * @param {number} x_lo,x_hi,y_lo,y_hi - index bounds of data matrix
      *
      *             The following two, one dimensional arrays (x and y) contain
@@ -308,12 +308,11 @@ var Conrec = (function () {
      * @param {number[]} z  - contour levels in increasing order.
      */
     Conrec.prototype.contour = function (data, x_lo, x_hi, y_lo, y_hi, x, y, z) {
+        var width = x.length;
         var h = this.h, sh = this.sh, xh = this.xh, yh = this.yh;
         this.contours = {};
-        if (data.length != x.length)
-            throw new Error('data matrix height should equal y.length');
-        if (data[0].length != y.length)
-            throw new Error('data matrix width should equal x.length');
+        if (data.length != x.length * y.length)
+            throw new Error('data matrix should have x.length * y.length elements');
         /** private */
         var xsect = function (p1, p2) {
             return (h[p2] * xh[p1] - h[p1] * xh[p2]) / (h[p2] - h[p1]);
@@ -352,11 +351,12 @@ var Conrec = (function () {
         for (var j = (y_hi - 1); j >= y_lo; j--) {
             for (var i = x_lo; i <= x_hi - 1; i++) {
                 var temp1, temp2;
-                temp1 = Math.min(data[i][j], data[i][j + 1]);
-                temp2 = Math.min(data[i + 1][j], data[i + 1][j + 1]);
+                var ii = i + j * width;
+                temp1 = Math.min(data[ii], data[ii + width]);
+                temp2 = Math.min(data[ii + 1], data[ii + 1 + width]);
                 dmin = Math.min(temp1, temp2);
-                temp1 = Math.max(data[i][j], data[i][j + 1]);
-                temp2 = Math.max(data[i + 1][j], data[i + 1][j + 1]);
+                temp1 = Math.max(data[ii], data[ii + width]);
+                temp2 = Math.max(data[ii + 1], data[ii + 1 + width]);
                 dmax = Math.max(temp1, temp2);
                 if (dmax >= z[0] && dmin <= z[z.length - 1]) {
                     for (var k = 0; k < z.length; k++) {
@@ -365,7 +365,7 @@ var Conrec = (function () {
                                 if (m > 0) {
                                     // The indexing of im and jm should be noted as it has to
                                     // start from zero
-                                    h[m] = data[i + im[m - 1]][j + jm[m - 1]] - z[k];
+                                    h[m] = data[ii + im[m - 1] + jm[m - 1] * width] - z[k];
                                     xh[m] = x[i + im[m - 1]];
                                     yh[m] = y[j + jm[m - 1]];
                                 }

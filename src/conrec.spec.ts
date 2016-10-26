@@ -20,6 +20,10 @@ function uniq(lst: number[]): number[] {
     return lst.sort((a,b)=>a-b).filter((item, pos, arr) => !pos || item != arr[pos - 1]);
 }
 
+function transpose(array: number[][]) {
+    return array[0].map((col, i) => array.map(row => row[i])); 
+}
+
 describe('conrec', () => {
     let c: Conrec = null;
     let contours: any[] = [];
@@ -32,14 +36,17 @@ describe('conrec', () => {
     });
     it('can create contours for a simple array', () => {
         let zdata = [[0,0,0,0,0,0], [0,1,1,1,1,0], [0,0,0,0,1,0], [0,0,0,0,0,0]];
-        let xs = range(0, zdata.length);
-        let ys = range(0, zdata[0].length);
+        let zdata_flat = zdata.reduce((x,y) => x.concat(y));
+        let xs = range(0, zdata[0].length);
+        let ys = range(0, zdata.length);
         let zs = range(-1.5, 2.0, 1);
-        c.contour(zdata, 0, xs.length - 1, 0, ys.length - 1, xs, ys, zs);
+        c.contour(zdata_flat, 0, xs.length - 1, 0, ys.length - 1, xs, ys, zs);
         contours = c.contourList();
         contours.should.be.an.Array();
+        // we should get a single contour with 25 points
         contours.should.have.length(1);
         contours[0].level.should.equal(0.5);
+        contours[0].length.should.equal(25);
         // console.log(contours)
         // Export to Matlab
         for (let c=0; c < contours.length; ++c) {
@@ -51,10 +58,11 @@ describe('conrec', () => {
         }
     });
     it('can create contours for a complex array', () => {
-        let xs = range(0, data.length);
-        let ys = range(0, data[0].length);
+        let data_flat = data.reduce((x,y) => x.concat(y));
+        let xs = range(0, data[0].length);
+        let ys = range(0, data.length);
         let zs = range(-5, 3, .5);
-        c.contour(data, 0, xs.length - 1, 0, ys.length - 1, xs, ys, zs);
+        c.contour(data_flat, 0, xs.length - 1, 0, ys.length - 1, xs, ys, zs);
         contours = c.contourList();
         contours.should.be.an.Array();
     });
@@ -74,6 +82,6 @@ describe('conrec', () => {
     it('all levels should be present', () => {    
         let levels = uniq(contours.map(x => x.level));
         levels.should.deepEqual([ -4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5 ]);
-        console.log(levels);
+        // console.log(levels);
     });
 });

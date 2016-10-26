@@ -37,11 +37,11 @@ export declare class Conrec {
      * Any number of contour levels may be specified but they must be in order of
      * increasing value.
      *
-     * IMPORTANT! This code was considers x-dimension to be of size data.length,
-     *            y-dimension to be data[0].length, which is reverse of what is
-     *            normally used. Ie. it assumes column-major matrix layout.
+     * IMPORTANT! This version (2.2+) now assumes row-major, but linearized matrix layout,
+     *            unlike in 2.1.0 of conrec.ts
      *
-     * @param {number[][]} data - matrix of data to contour
+     * @param {number[]} data - data to contour: linearized row-major matrix of size
+     *                          (y.length rows, x.length columns)
      * @param {number} x_lo,x_hi,y_lo,y_hi - index bounds of data matrix
      *
      *             The following two, one dimensional arrays (x and y) contain
@@ -50,5 +50,5 @@ export declare class Conrec {
      * @param {number[]} y  - data matrix row coordinates
      * @param {number[]} z  - contour levels in increasing order.
      */
-    contour(data: number[][], x_lo: number, x_hi: number, y_lo: number, y_hi: number, x: number[], y: number[], z: number[]): void;
+    contour(data: number[], x_lo: number, x_hi: number, y_lo: number, y_hi: number, x: number[], y: number[], z: number[]): void;
 }

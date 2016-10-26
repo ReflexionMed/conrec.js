@@ -1,23 +1,27 @@
 {
   "name": "conrec",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "JavaScript implementation of the CONREC contouring algorithm",
-  "main": "conrec.js",
+  "main": "./dist/conrec.js",
+  "typings": "./dist/conrec.d.ts",
   "directories": {
     "example": "example"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "tsd install && tsc",
+    "test": "tsc && mocha dist"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ReflexionMed/conrec.ts.git"
   },
-  "author": "Jason Davies",
+  "author": "Jason Davies, Yevgen Voronenko",
   "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/ReflexionMed/conrec.ts/issues"
   },
   "homepage": "https://github.com/ReflexionMed/conrec.ts#readme",
-  "typings": "./conrec.d.ts"
+  "devDependencies": {
+    "should": "^11.1.1"
+  }
 }

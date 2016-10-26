@@ -305,7 +305,7 @@ var Conrec = (function () {
      * @param {number} nc   - number of contour levels
      * @param {number[]} z  - contour levels in increasing order.
      */
-    Conrec.prototype.contour = function (d, ilb, iub, jlb, jub, x, y, nc, z) {
+    Conrec.prototype.contour = function (data, ilb, iub, jlb, jub, x, y, nc, z) {
         var h = this.h, sh = this.sh, xh = this.xh, yh = this.yh;
         this.contours = {};
         /** private */
@@ -346,11 +346,11 @@ var Conrec = (function () {
         for (var j = (jub - 1); j >= jlb; j--) {
             for (var i = ilb; i <= iub - 1; i++) {
                 var temp1, temp2;
-                temp1 = Math.min(d[i][j], d[i][j + 1]);
-                temp2 = Math.min(d[i + 1][j], d[i + 1][j + 1]);
+                temp1 = Math.min(data[i][j], data[i][j + 1]);
+                temp2 = Math.min(data[i + 1][j], data[i + 1][j + 1]);
                 dmin = Math.min(temp1, temp2);
-                temp1 = Math.max(d[i][j], d[i][j + 1]);
-                temp2 = Math.max(d[i + 1][j], d[i + 1][j + 1]);
+                temp1 = Math.max(data[i][j], data[i][j + 1]);
+                temp2 = Math.max(data[i + 1][j], data[i + 1][j + 1]);
                 dmax = Math.max(temp1, temp2);
                 if (dmax >= z[0] && dmin <= z[nc - 1]) {
                     for (var k = 0; k < nc; k++) {
@@ -359,7 +359,7 @@ var Conrec = (function () {
                                 if (m > 0) {
                                     // The indexing of im and jm should be noted as it has to
                                     // start from zero
-                                    h[m] = d[i + im[m - 1]][j + jm[m - 1]] - z[k];
+                                    h[m] = data[i + im[m - 1]][j + jm[m - 1]] - z[k];
                                     xh[m] = x[i + im[m - 1]];
                                     yh[m] = y[j + jm[m - 1]];
                                 }

@@ -48,5 +48,5 @@ export declare class Conrec {
      * @param {number} nc   - number of contour levels
      * @param {number[]} z  - contour levels in increasing order.
      */
-    contour(d: any, ilb: any, iub: any, jlb: any, jub: any, x: any, y: any, nc: any, z: any): void;
+    contour(data: number[][], ilb: any, iub: any, jlb: any, jub: any, x: any, y: any, nc: any, z: any): void;
 }

@@ -31,30 +31,30 @@ describe('conrec', () => {
         data.should.be.an.Array();
     });
     it('can create contours for a simple array', () => {
-        let zdata = [[0,0,0,0,0], [0,0,1,1,0], [0,0,0,1,0], [0,0,0,0,0]];
+        let zdata = [[0,0,0,0,0,0], [0,1,1,1,1,0], [0,0,0,0,1,0], [0,0,0,0,0,0]];
         let xs = range(0, zdata.length);
         let ys = range(0, zdata[0].length);
         let zs = range(-1.5, 2.0, 1);
-        c.contour(zdata, 0, xs.length - 1, 0, ys.length - 1, xs, ys, zs.length, zs);
+        c.contour(zdata, 0, xs.length - 1, 0, ys.length - 1, xs, ys, zs);
         contours = c.contourList();
         contours.should.be.an.Array();
         contours.should.have.length(1);
         contours[0].level.should.equal(0.5);
         // console.log(contours)
-        // // Export to Matlab
-        // for (let c=0; c < contours.length; ++c) {
-        //     console.log('c' + c + ' = [' )
-        //     for (let i=0; i < contours[c].length; ++i) {
-        //         console.log(contours[c][i].x + ' ' + contours[c][i].y);
-        //     }
-        //     console.log('];');
-        // }
+        // Export to Matlab
+        for (let c=0; c < contours.length; ++c) {
+            console.log('c' + c + ' = [' )
+            for (let i=0; i < contours[c].length; ++i) {
+                console.log(contours[c][i].x + ' ' + contours[c][i].y);
+            }
+            console.log('];');
+        }
     });
     it('can create contours for a complex array', () => {
         let xs = range(0, data.length);
         let ys = range(0, data[0].length);
         let zs = range(-5, 3, .5);
-        c.contour(data, 0, xs.length - 1, 0, ys.length - 1, xs, ys, zs.length, zs);
+        c.contour(data, 0, xs.length - 1, 0, ys.length - 1, xs, ys, zs);
         contours = c.contourList();
         contours.should.be.an.Array();
     });

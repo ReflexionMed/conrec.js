@@ -335,20 +335,29 @@ export class Conrec {
      * Any number of contour levels may be specified but they must be in order of
      * increasing value.
      *
-     *
-     * @param {number[][]} d - matrix of data to contour
-     * @param {number} ilb,iub,jlb,jub - index bounds of data matrix
+     * IMPORTANT! This code was considers x-dimension to be of size data.length, 
+     *            y-dimension to be data[0].length, which is reverse of what is 
+     *            normally used. Ie. it assumes column-major matrix layout.
+     * 
+     * @param {number[][]} data - matrix of data to contour
+     * @param {number} x_lo,x_hi,y_lo,y_hi - index bounds of data matrix
      *
      *             The following two, one dimensional arrays (x and y) contain
      *             the horizontal and vertical coordinates of each sample points.
      * @param {number[]} x  - data matrix column coordinates
      * @param {number[]} y  - data matrix row coordinates
-     * @param {number} nc   - number of contour levels
      * @param {number[]} z  - contour levels in increasing order.
      */
-    contour(data: number[][], ilb, iub, jlb, jub, x, y, nc, z) {
+    contour(data: number[][], 
+            x_lo: number, x_hi: number, y_lo: number, y_hi: number, 
+            x: number[], y: number[], z: number[]) 
+    {
         var h = this.h, sh = this.sh, xh = this.xh, yh = this.yh;
         this.contours = {};
+        if (data.length != x.length) 
+            throw new Error('data matrix height should equal y.length');
+        if (data[0].length != y.length) 
+            throw new Error('data matrix width should equal x.length');
 
         /** private */
         var xsect = function (p1, p2) {
@@ -389,8 +398,8 @@ export class Conrec {
             ]
         ];
 
-        for (var j = (jub - 1); j >= jlb; j--) {
-            for (var i = ilb; i <= iub - 1; i++) {
+        for (var j = (y_hi - 1); j >= y_lo; j--) {
+            for (var i = x_lo; i <= x_hi - 1; i++) {
                 var temp1, temp2;
                 temp1 = Math.min(data[i][j], data[i][j + 1]);
                 temp2 = Math.min(data[i + 1][j], data[i + 1][j + 1]);
@@ -399,8 +408,8 @@ export class Conrec {
                 temp2 = Math.max(data[i + 1][j], data[i + 1][j + 1]);
                 dmax = Math.max(temp1, temp2);
 
-                if (dmax >= z[0] && dmin <= z[nc - 1]) {
-                    for (var k = 0; k < nc; k++) {
+                if (dmax >= z[0] && dmin <= z[z.length - 1]) {
+                    for (var k = 0; k < z.length; k++) {
                         if (z[k] >= dmin && z[k] <= dmax) {
                             for (var m = 4; m >= 0; m--) {
                                 if (m > 0) {

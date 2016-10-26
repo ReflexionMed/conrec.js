@@ -37,16 +37,18 @@ export declare class Conrec {
      * Any number of contour levels may be specified but they must be in order of
      * increasing value.
      *
+     * IMPORTANT! This code was considers x-dimension to be of size data.length,
+     *            y-dimension to be data[0].length, which is reverse of what is
+     *            normally used. Ie. it assumes column-major matrix layout.
      *
-     * @param {number[][]} d - matrix of data to contour
-     * @param {number} ilb,iub,jlb,jub - index bounds of data matrix
+     * @param {number[][]} data - matrix of data to contour
+     * @param {number} x_lo,x_hi,y_lo,y_hi - index bounds of data matrix
      *
      *             The following two, one dimensional arrays (x and y) contain
      *             the horizontal and vertical coordinates of each sample points.
      * @param {number[]} x  - data matrix column coordinates
      * @param {number[]} y  - data matrix row coordinates
-     * @param {number} nc   - number of contour levels
      * @param {number[]} z  - contour levels in increasing order.
      */
-    contour(data: number[][], ilb: any, iub: any, jlb: any, jub: any, x: any, y: any, nc: any, z: any): void;
+    contour(data: number[][], x_lo: number, x_hi: number, y_lo: number, y_hi: number, x: number[], y: number[], z: number[]): void;
 }

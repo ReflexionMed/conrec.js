@@ -1,6 +1,6 @@
 {
   "name": "conrec",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "JavaScript implementation of the CONREC contouring algorithm",
   "main": "./dist/conrec.js",
   "typings": "./dist/conrec.d.ts",
@@ -8,7 +8,6 @@
     "example": "example"
   },
   "scripts": {
-    "postinstall": "tsd install && tsc",
     "test": "tsc && mocha dist"
   },
   "repository": {

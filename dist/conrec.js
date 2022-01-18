@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright (c) 2010, Jason Davies.
  *
@@ -34,7 +35,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Conrec = void 0;
 /**
  * Copyright (c) 1996-1997 Nicholas Yue
  *
@@ -72,18 +74,18 @@ function reverseList(list) {
     var pp = list.head;
     while (pp) {
         // swap prev/next pointers
-        var temp = pp.next;
+        var temp1 = pp.next;
         pp.next = pp.prev;
-        pp.prev = temp;
+        pp.prev = temp1;
         // continue through the list
-        pp = temp;
+        pp = temp1;
     }
     // swap head/tail pointers
-    var temp = list.head;
+    var temp2 = list.head;
     list.head = list.tail;
-    list.tail = temp;
+    list.tail = temp2;
 }
-var ContourBuilder = (function () {
+var ContourBuilder = /** @class */ (function () {
     function ContourBuilder(level) {
         this.level = level;
         this.s = null;
@@ -140,7 +142,7 @@ var ContourBuilder = (function () {
         // c is the case selector based on which of ma and/or mb are set
         var c = ((ma != null) ? 1 : 0) | ((mb != null) ? 2 : 0);
         switch (c) {
-            case 0:
+            case 0: { // both unmatched, add as new sequence
                 var aa = { p: a, prev: null };
                 var bb = { p: b, next: null };
                 aa.next = bb;
@@ -154,7 +156,8 @@ var ContourBuilder = (function () {
                 this.s = ma;
                 ++this.count; // not essential - tracks number of unmerged sequences
                 break;
-            case 1:
+            }
+            case 1: { // a matched, b did not - thus b extends sequence ma
                 var pp = { p: b, prev: null, next: null };
                 if (prependA) {
                     pp.next = ma.head;
@@ -169,7 +172,8 @@ var ContourBuilder = (function () {
                     ma.tail = pp;
                 }
                 break;
-            case 2:
+            }
+            case 2: { // b matched, a did not - thus a extends sequence mb
                 var pp = { p: a, prev: null, next: null };
                 if (prependB) {
                     pp.next = mb.head;
@@ -184,7 +188,8 @@ var ContourBuilder = (function () {
                     mb.tail = pp;
                 }
                 break;
-            case 3:
+            }
+            case 3: { // both matched, can merge sequences
                 // if the sequences are the same, do nothing, as we are simply closing this path (could set a flag)
                 if (ma === mb) {
                     var pp = { p: ma.tail.p, next: ma.head, prev: null };
@@ -197,31 +202,32 @@ var ContourBuilder = (function () {
                 // prependB will tell us which type of join is needed. For head/head and tail/tail joins
                 // one sequence needs to be reversed
                 switch ((prependA ? 1 : 0) | (prependB ? 2 : 0)) {
-                    case 0:
+                    case 0: // tail-tail
                         // reverse ma and append to mb
                         reverseList(ma);
                     // fall through to head/tail case
-                    case 1:
+                    case 1: // head-tail
                         // ma is appended to mb and ma discarded
                         mb.tail.next = ma.head;
                         ma.head.prev = mb.tail;
                         mb.tail = ma.tail;
-                        //discard ma sequence record
+                        // discard ma sequence record
                         this.remove_seq(ma);
                         break;
-                    case 3:
+                    case 3: // head-head
                         // reverse ma and append mb to it
                         reverseList(ma);
                     // fall through to tail/head case
-                    case 2:
+                    case 2: // tail-head
                         // mb is appended to ma and mb is discarded
                         ma.tail.next = mb.head;
                         mb.head.prev = ma.tail;
                         ma.tail = mb.tail;
-                        //discard mb sequence record
+                        // discard mb sequence record
                         this.remove_seq(mb);
                         break;
                 }
+            }
         }
     };
     return ContourBuilder;
@@ -233,7 +239,7 @@ var ContourBuilder = (function () {
  *                               custom "contour builder", which populates the
  *                               contours property.
  */
-var Conrec = (function () {
+var Conrec = /** @class */ (function () {
     function Conrec() {
         this.contours = {};
         this.h = new Array(5);
@@ -262,10 +268,11 @@ var Conrec = (function () {
     };
     Conrec.prototype.contourList = function () {
         var l = [];
-        var a = this.contours;
-        for (var k in a) {
-            var s = a[k].s;
-            var level = a[k].level;
+        var keys = Object.keys(this.contours);
+        for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+            var k = keys_1[_i];
+            var s = this.contours[k].s;
+            var level = this.contours[k].level;
             while (s) {
                 var h = s.head;
                 var l2 = []; // XXX: setting properties on a list (l2.k = ...) is an ugly hack! because they are invisible...
@@ -310,8 +317,9 @@ var Conrec = (function () {
         var width = x.length;
         var h = this.h, sh = this.sh, xh = this.xh, yh = this.yh;
         this.contours = {};
-        if (data.length != x.length * y.length)
+        if (data.length != x.length * y.length) {
             throw new Error('data matrix should have x.length * y.length elements');
+        }
         /** private */
         var xsect = function (p1, p2) {
             return (h[p2] * xh[p1] - h[p1] * xh[p2]) / (h[p2] - h[p1]);
@@ -349,7 +357,7 @@ var Conrec = (function () {
         ];
         for (var j = (y_hi - 1); j >= y_lo; j--) {
             for (var i = x_lo; i <= x_hi - 1; i++) {
-                var temp1, temp2;
+                var temp1 = void 0, temp2 = void 0;
                 var ii = i + j * width;
                 temp1 = Math.min(data[ii], data[ii + width]);
                 temp2 = Math.min(data[ii + 1], data[ii + 1 + width]);
@@ -360,7 +368,8 @@ var Conrec = (function () {
                 if (dmax >= z[0] && dmin <= z[z.length - 1]) {
                     for (var k = 0; k < z.length; k++) {
                         if (z[k] >= dmin && z[k] <= dmax) {
-                            for (var m = 4; m >= 0; m--) {
+                            var m = 4;
+                            for (m = 4; m >= 0; m--) {
                                 if (m > 0) {
                                     // The indexing of im and jm should be noted as it has to
                                     // start from zero
@@ -425,55 +434,55 @@ var Conrec = (function () {
                                 case_value = castab[sh[m1] + 1][sh[m2] + 1][sh[m3] + 1];
                                 if (case_value != 0) {
                                     switch (case_value) {
-                                        case 1:
+                                        case 1: // Line between vertices 1 and 2
                                             x1 = xh[m1];
                                             y1 = yh[m1];
                                             x2 = xh[m2];
                                             y2 = yh[m2];
                                             break;
-                                        case 2:
+                                        case 2: // Line between vertices 2 and 3
                                             x1 = xh[m2];
                                             y1 = yh[m2];
                                             x2 = xh[m3];
                                             y2 = yh[m3];
                                             break;
-                                        case 3:
+                                        case 3: // Line between vertices 3 and 1
                                             x1 = xh[m3];
                                             y1 = yh[m3];
                                             x2 = xh[m1];
                                             y2 = yh[m1];
                                             break;
-                                        case 4:
+                                        case 4: // Line between vertex 1 and side 2-3
                                             x1 = xh[m1];
                                             y1 = yh[m1];
                                             x2 = xsect(m2, m3);
                                             y2 = ysect(m2, m3);
                                             break;
-                                        case 5:
+                                        case 5: // Line between vertex 2 and side 3-1
                                             x1 = xh[m2];
                                             y1 = yh[m2];
                                             x2 = xsect(m3, m1);
                                             y2 = ysect(m3, m1);
                                             break;
-                                        case 6:
+                                        case 6: //  Line between vertex 3 and side 1-2
                                             x1 = xh[m3];
                                             y1 = yh[m3];
                                             x2 = xsect(m1, m2);
                                             y2 = ysect(m1, m2);
                                             break;
-                                        case 7:
+                                        case 7: // Line between sides 1-2 and 2-3
                                             x1 = xsect(m1, m2);
                                             y1 = ysect(m1, m2);
                                             x2 = xsect(m2, m3);
                                             y2 = ysect(m2, m3);
                                             break;
-                                        case 8:
+                                        case 8: // Line between sides 2-3 and 3-1
                                             x1 = xsect(m2, m3);
                                             y1 = ysect(m2, m3);
                                             x2 = xsect(m3, m1);
                                             y2 = ysect(m3, m1);
                                             break;
-                                        case 9:
+                                        case 9: // Line between sides 3-1 and 1-2
                                             x1 = xsect(m3, m1);
                                             y1 = ysect(m3, m1);
                                             x2 = xsect(m1, m2);
@@ -483,7 +492,7 @@ var Conrec = (function () {
                                             break;
                                     }
                                     // Put your processing code here and comment out the printf
-                                    //printf("%f %f %f %f %f\n",x1,y1,x2,y2,z[k]);
+                                    // printf("%f %f %f %f %f\n",x1,y1,x2,y2,z[k]);
                                     this.drawContour(x1, y1, x2, y2, z[k], k);
                                 }
                             }

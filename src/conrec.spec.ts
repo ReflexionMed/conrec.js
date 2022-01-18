@@ -1,27 +1,22 @@
-/// <reference path="../typings/mocha/mocha.d.ts" />
-/// <reference path="../typings/should/should.d.ts" />
-
 import { Conrec } from './conrec';
-import { should } from 'should';
-() => should; // this line makes sure that 'should' actually loads
 import { data } from './data';
 
 function range(a: number, b: number, inc?: number): number[] {
-    let res = [];
-    if (! inc) 
+    const res = [];
+    if (! inc)
         inc = 1;
     for (let val = a; val < b; val += inc)  {
         res.push(val);
-    } 
+    }
     return res;
 }
 
 function uniq(lst: number[]): number[] {
-    return lst.sort((a,b)=>a-b).filter((item, pos, arr) => !pos || item != arr[pos - 1]);
+    return lst.sort((a, b) => a - b).filter((item, pos, arr) => !pos || item != arr[pos - 1]);
 }
 
 function transpose(array: number[][]) {
-    return array[0].map((col, i) => array.map(row => row[i])); 
+    return array[0].map((col, i) => array.map(row => row[i]));
 }
 
 describe('conrec', () => {
@@ -32,56 +27,61 @@ describe('conrec', () => {
         c = new Conrec();
     });
     it('can import test data', () => {
-        data.should.be.an.Array();
+        expect(data).toBeDefined();
+        expect(data instanceof Array).toBe(true);
     });
     it('can create contours for a simple array', () => {
-        let zdata = [[0,0,0,0,0,0], [0,1,1,1,1,0], [0,0,0,0,1,0], [0,0,0,0,0,0]];
-        let zdata_flat = zdata.reduce((x,y) => x.concat(y));
-        let xs = range(0, zdata[0].length);
-        let ys = range(0, zdata.length);
-        let zs = range(-1.5, 2.0, 1);
+        const zdata = [
+          [0, 0, 0, 0, 0, 0],
+          [0, 1, 1, 1, 1, 0],
+          [0, 0, 0, 0, 1, 0],
+          [0, 0, 0, 0, 0, 0]
+        ];
+        const zdata_flat = zdata.reduce((x, y) => x.concat(y));
+        const xs = range(0, zdata[0].length);
+        const ys = range(0, zdata.length);
+        const zs = range(-1.5, 2.0, 1);
         c.contour(zdata_flat, 0, xs.length - 1, 0, ys.length - 1, xs, ys, zs);
         contours = c.contourList();
-        contours.should.be.an.Array();
         // we should get a single contour with 25 points
-        contours.should.have.length(1);
-        contours[0].level.should.equal(0.5);
-        contours[0].length.should.equal(25);
+        expect(contours).toHaveLength(1);
+        expect(contours[0].level).toBe(0.5);
+        expect(contours[0]).toHaveLength(25);
         // console.log(contours)
         // Export to Matlab
-        for (let c=0; c < contours.length; ++c) {
-            console.log('c' + c + ' = [' )
-            for (let i=0; i < contours[c].length; ++i) {
-                console.log(contours[c][i].x + ' ' + contours[c][i].y);
-            }
-            console.log('];');
-        }
+        // for (let c = 0; c < contours.length; ++c) {
+        //     console.log('c' + c + ' = [' );
+        //     for (let i = 0; i < contours[c].length; ++i) {
+        //         console.log(contours[c][i].x + ' ' + contours[c][i].y);
+        //     }
+        //     console.log('];');
+        // }
     });
     it('can create contours for a complex array', () => {
-        let data_flat = data.reduce((x,y) => x.concat(y));
-        let xs = range(0, data[0].length);
-        let ys = range(0, data.length);
-        let zs = range(-5, 3, .5);
+        const data_flat = data.reduce((x, y) => x.concat(y));
+        const xs = range(0, data[0].length);
+        const ys = range(0, data.length);
+        const zs = range(-5, 3, .5);
         c.contour(data_flat, 0, xs.length - 1, 0, ys.length - 1, xs, ys, zs);
         contours = c.contourList();
-        contours.should.be.an.Array();
+        expect(data instanceof Array).toBe(true);
     });
     it('each contour should be a list of x/y pairs', () => {
-        for (let i in contours) {
-            let cc = contours[i];
-            cc.should.have.property('level');
-            cc.should.be.an.Array(); 
-            for (let j=0; j < cc.length; ++j) {
-                cc[j].should.be.an.Object().and.have.properties('x', 'y');
+        for (const cc of contours) {
+            expect(cc).toHaveProperty('level');
+            expect(data instanceof Array).toBe(true);
+            for (let j = 0; j < cc.length; ++j) {
+                expect(cc[j]).toHaveProperty('x');
+                expect(cc[j]).toHaveProperty('y');
             }
-        }    
+        }
     });
     it('generates correct # of contours', () => {
-        contours.should.have.length(155);
+        expect(contours).toHaveLength(155);
     });
-    it('all levels should be present', () => {    
-        let levels = uniq(contours.map(x => x.level));
-        levels.should.deepEqual([ -4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5 ]);
+    it('all levels should be present', () => {
+        const levels = uniq(contours.map(x => x.level));
+        expect(levels).toEqual([ -4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5 ]);
         // console.log(levels);
     });
 });

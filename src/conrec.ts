@@ -35,7 +35,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** 
+/**
  * Copyright (c) 1996-1997 Nicholas Yue
  *
  * This software is copyrighted by Nicholas Yue. This code is based on Paul D.
@@ -65,7 +65,7 @@
  */
 //
 function pointsEqual(a, b) {
-    var x = a.x - b.x, y = a.y - b.y;
+    const x = a.x - b.x, y = a.y - b.y;
     return x * x + y * y < Number.EPSILON;
 }
 
@@ -79,22 +79,22 @@ type LinkedList = {
 };
 
 function reverseList(list: LinkedList) {
-    var pp = list.head;
+    let pp = list.head;
 
     while (pp) {
         // swap prev/next pointers
-        var temp = pp.next;
+        const temp1 = pp.next;
         pp.next = pp.prev;
-        pp.prev = temp;
+        pp.prev = temp1;
 
         // continue through the list
-        pp = temp;
+        pp = temp1;
     }
 
     // swap head/tail pointers
-    var temp = list.head;
+    const temp2 = list.head;
     list.head = list.tail;
-    list.tail = temp;
+    list.tail = temp2;
 }
 
 
@@ -124,11 +124,11 @@ class ContourBuilder {
     }
 
     addSegment(a, b) {
-        var ss = this.s;
-        var ma: LinkedList = null;
-        var mb: LinkedList = null;
-        var prependA = false;
-        var prependB = false;
+        let ss = this.s;
+        let ma: LinkedList = null;
+        let mb: LinkedList = null;
+        let prependA = false;
+        let prependB = false;
 
         while (ss) {
             if (ma == null) {
@@ -158,12 +158,12 @@ class ContourBuilder {
         }
 
         // c is the case selector based on which of ma and/or mb are set
-        var c = ((ma != null) ? 1 : 0) | ((mb != null) ? 2 : 0);
+        const c = ((ma != null) ? 1 : 0) | ((mb != null) ? 2 : 0);
 
         switch (c) {
-            case 0:   // both unmatched, add as new sequence
-                var aa: any = { p: a, prev: null };
-                var bb: any = { p: b, next: null };
+            case 0: {  // both unmatched, add as new sequence
+                const aa: any = { p: a, prev: null };
+                const bb: any = { p: b, next: null };
                 aa.next = bb;
                 bb.prev = aa;
 
@@ -177,9 +177,9 @@ class ContourBuilder {
 
                 ++this.count;    // not essential - tracks number of unmerged sequences
                 break;
-
-            case 1:   // a matched, b did not - thus b extends sequence ma
-                var pp: LinkedList = { p: b, prev: null, next: null };
+            }
+            case 1: {  // a matched, b did not - thus b extends sequence ma
+                const pp: LinkedList = { p: b, prev: null, next: null };
 
                 if (prependA) {
                     pp.next = ma.head;
@@ -193,9 +193,9 @@ class ContourBuilder {
                     ma.tail = pp;
                 }
                 break;
-
-            case 2:   // b matched, a did not - thus a extends sequence mb
-                var pp: LinkedList = { p: a, prev: null, next: null };
+            }
+            case 2: {  // b matched, a did not - thus a extends sequence mb
+                const pp: LinkedList = { p: a, prev: null, next: null };
 
                 if (prependB) {
                     pp.next = mb.head;
@@ -209,12 +209,12 @@ class ContourBuilder {
                     mb.tail = pp;
                 }
                 break;
-
-            case 3:   // both matched, can merge sequences
+            }
+            case 3: {  // both matched, can merge sequences
                 // if the sequences are the same, do nothing, as we are simply closing this path (could set a flag)
 
                 if (ma === mb) {
-                    var pp: LinkedList = { p: ma.tail.p, next: ma.head, prev: null };
+                    const pp: LinkedList = { p: ma.tail.p, next: ma.head, prev: null };
                     ma.head.prev = pp;
                     ma.head = pp;
                     ma.closed = true;
@@ -235,7 +235,7 @@ class ContourBuilder {
                         ma.head.prev = mb.tail;
                         mb.tail = ma.tail;
 
-                        //discard ma sequence record
+                        // discard ma sequence record
                         this.remove_seq(ma);
                         break;
 
@@ -249,10 +249,11 @@ class ContourBuilder {
                         mb.head.prev = ma.tail;
                         ma.tail = mb.tail;
 
-                        //discard mb sequence record
+                        // discard mb sequence record
                         this.remove_seq(mb);
                         break;
                 }
+            }
         }
     }
 }
@@ -300,14 +301,14 @@ export class Conrec {
     }
 
     contourList() {
-        var l = [];
-        var a = this.contours;
-        for (var k in a) {
-            var s = a[k].s;
-            var level = a[k].level;
+        const l = [];
+        const keys = Object.keys(this.contours);
+        for (const k of keys) {
+            let s = this.contours[k].s;
+            const level = this.contours[k].level;
             while (s) {
-                var h = s.head;
-                var l2: any = []; // XXX: setting properties on a list (l2.k = ...) is an ugly hack! because they are invisible...
+                let h = s.head;
+                const l2: any = []; // XXX: setting properties on a list (l2.k = ...) is an ugly hack! because they are invisible...
                 l2.level = level;
                 l2.k = k;
                 while (h && h.p) {
@@ -318,7 +319,7 @@ export class Conrec {
                 s = s.next;
             }
         }
-        l.sort(function (a, b) { return a.k - b.k });
+        l.sort((a, b) => a.k - b.k);
         return l;
     }
 
@@ -335,8 +336,8 @@ export class Conrec {
      *
      * IMPORTANT! This version (2.2+) now assumes row-major, but linearized matrix layout,
      *            unlike in 2.1.0 of conrec.ts
-     * 
-     * @param {number[]} data - data to contour: linearized row-major matrix of size 
+     *
+     * @param {number[]} data - data to contour: linearized row-major matrix of size
      *                          (y.length rows, x.length columns)
      * @param {number} x_lo,x_hi,y_lo,y_hi - index bounds of data matrix
      *
@@ -346,39 +347,39 @@ export class Conrec {
      * @param {number[]} y  - data matrix row coordinates
      * @param {number[]} z  - contour levels in increasing order.
      */
-    contour(data: number[], 
-            x_lo: number, x_hi: number, y_lo: number, y_hi: number, 
-            x: number[], y: number[], z: number[]) 
-    {
-        var width = x.length;
-        var h = this.h, sh = this.sh, xh = this.xh, yh = this.yh;
+    contour(data: number[],
+            x_lo: number, x_hi: number, y_lo: number, y_hi: number,
+            x: number[], y: number[], z: number[]) {
+        const width = x.length;
+        const h = this.h, sh = this.sh, xh = this.xh, yh = this.yh;
         this.contours = {};
-        if (data.length != x.length * y.length) 
+        if (data.length != x.length * y.length) {
             throw new Error('data matrix should have x.length * y.length elements');
+        }
 
         /** private */
-        var xsect = function (p1, p2) {
+        const xsect = function (p1, p2) {
             return (h[p2] * xh[p1] - h[p1] * xh[p2]) / (h[p2] - h[p1]);
-        }
+        };
 
-        var ysect = function (p1, p2) {
+        const ysect = function (p1, p2) {
             return (h[p2] * yh[p1] - h[p1] * yh[p2]) / (h[p2] - h[p1]);
-        }
-        var m1;
-        var m2;
-        var m3;
-        var case_value;
-        var dmin;
-        var dmax;
-        var x1 = 0.0;
-        var x2 = 0.0;
-        var y1 = 0.0;
-        var y2 = 0.0;
+        };
+        let m1;
+        let m2;
+        let m3;
+        let case_value;
+        let dmin;
+        let dmax;
+        let x1 = 0.0;
+        let x2 = 0.0;
+        let y1 = 0.0;
+        let y2 = 0.0;
 
         // The indexing of im and jm should be noted as it has to start from zero
         // unlike the fortran counter part
-        var im = [0, 1, 1, 0];
-        var jm = [0, 0, 1, 1];
+        const im = [0, 1, 1, 0];
+        const jm = [0, 0, 1, 1];
 
         // Note that castab is arranged differently from the FORTRAN code because
         // Fortran and C/C++ arrays are transposed of each other, in this case
@@ -395,10 +396,10 @@ export class Conrec {
             ]
         ];
 
-        for (var j = (y_hi - 1); j >= y_lo; j--) {
-            for (var i = x_lo; i <= x_hi - 1; i++) {
-                var temp1, temp2;
-                let ii = i + j * width;
+        for (let j = (y_hi - 1); j >= y_lo; j--) {
+            for (let i = x_lo; i <= x_hi - 1; i++) {
+                let temp1, temp2;
+                const ii = i + j * width;
                 temp1 = Math.min(data[ii], data[ii + width]);
                 temp2 = Math.min(data[ii + 1], data[ii + 1 + width]);
                 dmin = Math.min(temp1, temp2);
@@ -407,13 +408,14 @@ export class Conrec {
                 dmax = Math.max(temp1, temp2);
 
                 if (dmax >= z[0] && dmin <= z[z.length - 1]) {
-                    for (var k = 0; k < z.length; k++) {
+                    for (let k = 0; k < z.length; k++) {
                         if (z[k] >= dmin && z[k] <= dmax) {
-                            for (var m = 4; m >= 0; m--) {
+                            let m = 4;
+                            for (m = 4; m >= 0; m--) {
                                 if (m > 0) {
                                     // The indexing of im and jm should be noted as it has to
                                     // start from zero
-                                    h[m] = data[ii + im[m - 1] + jm[m - 1] * width] - z[k]; 
+                                    h[m] = data[ii + im[m - 1] + jm[m - 1] * width] - z[k];
                                     xh[m] = x[i + im[m - 1]];
                                     yh[m] = y[j + jm[m - 1]];
                                 } else {
@@ -531,7 +533,7 @@ export class Conrec {
                                             break;
                                     }
                                     // Put your processing code here and comment out the printf
-                                    //printf("%f %f %f %f %f\n",x1,y1,x2,y2,z[k]);
+                                    // printf("%f %f %f %f %f\n",x1,y1,x2,y2,z[k]);
                                     this.drawContour(x1, y1, x2, y2, z[k], k);
                                 }
                             }

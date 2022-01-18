@@ -64,11 +64,9 @@
  * MODIFICATIONS.
  */
 //
-const EPSILON = 1e-10;
-
 function pointsEqual(a, b) {
     var x = a.x - b.x, y = a.y - b.y;
-    return x * x + y * y < EPSILON;
+    return x * x + y * y < Number.EPSILON;
 }
 
 type LinkedList = {
@@ -424,9 +422,9 @@ export class Conrec {
                                     yh[0] = 0.5 * (y[j] + y[j + 1]);
                                 }
 
-                                if (h[m] > EPSILON) {
+                                if (h[m] > Number.EPSILON) {
                                     sh[m] = 1;
-                                } else if (h[m] < -EPSILON) {
+                                } else if (h[m] < -Number.EPSILON) {
                                     sh[m] = -1;
                                 } else {
                                     sh[m] = 0;
